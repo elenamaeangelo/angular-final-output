@@ -1,0 +1,89 @@
+<main>
+  <section class="pets-section" id="available" aria-labelledby="pets-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Meet the good ones</p>
+        <h1 id="pets-title">Pets looking for <span>you</span></h1>
+      </div>
+      <label class="search-box">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <span class="visually-hidden">Search pets by name, breed, or location</span>
+        <input
+          type="search"
+          placeholder="Search by name, breed..."
+          [value]="searchText()"
+          (input)="updateSearch($event)"
+        />
+      </label>
+    </div>
+
+    <div class="pet-toolbar">
+      <div class="filter-list" role="group" aria-label="Filter pets by type">
+        <button
+          type="button"
+          class="filter-chip"
+          [class.filter-active]="activeFilter() === 'All'"
+          [attr.aria-pressed]="activeFilter() === 'All'"
+          (click)="setFilter('All')"
+        >All pets</button>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.filter-active]="activeFilter() === 'Dog'"
+          [attr.aria-pressed]="activeFilter() === 'Dog'"
+          (click)="setFilter('Dog')"
+        ><span aria-hidden="true">🐶</span> Dogs</button>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.filter-active]="activeFilter() === 'Cat'"
+          [attr.aria-pressed]="activeFilter() === 'Cat'"
+          (click)="setFilter('Cat')"
+        ><span aria-hidden="true">🐱</span> Cats</button>
+      </div>
+      <p class="results-count">{{ filteredPets().length }} lovely {{ filteredPets().length === 1 ? 'pet' : 'pets' }} waiting</p>
+    </div>
+
+    @if (filteredPets().length > 0) {
+      <div class="pet-grid">
+        @for (pet of filteredPets(); track pet.id) {
+          <a
+            class="pet-card"
+            [routerLink]="['/pets', pet.id]"
+            [attr.aria-label]="'Meet ' + pet.name + ', ' + pet.age + ' ' + pet.breed"
+          >
+            <span class="pet-image-wrap">
+              <img
+                [ngSrc]="pet.image"
+                [alt]="pet.name + ', a ' + pet.breed"
+                width="800"
+                height="640"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
+              <span class="pet-type">{{ pet.type }}</span>
+              <span class="favorite-mark" aria-hidden="true">♡</span>
+            </span>
+            <span class="pet-card-content">
+              <span class="pet-name-row">
+                <span class="pet-name">{{ pet.name }}</span>
+                <span class="pet-age">{{ pet.age }}</span>
+              </span>
+              <span class="pet-breed">{{ pet.breed }} <span aria-hidden="true">·</span> {{ pet.sex }}</span>
+              <span class="pet-location"><span aria-hidden="true">⌖</span> {{ pet.location }}</span>
+              <span class="card-link">Meet {{ pet.name }} <span aria-hidden="true">↗</span></span>
+            </span>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span aria-hidden="true">🐾</span>
+        <h2>No matches just yet</h2>
+        <p>Try another search or choose a different pet type.</p>
+        <button class="text-button" type="button" (click)="searchText.set(''); setFilter('All')">
+          Show all pets
+        </button>
+      </div>
+    }
+  </section>
+</main>

@@ -1,0 +1,122 @@
+<main class="pet-page">
+  @if (pet; as currentPet) {
+    <a class="back-link" routerLink="/" fragment="available">
+      <span aria-hidden="true">←</span> Back to all pets
+    </a>
+    <article class="pet-detail-layout">
+      <div class="pet-detail-image">
+        <img
+          [ngSrc]="currentPet.image"
+          [alt]="currentPet.name + ', a ' + currentPet.breed"
+          width="1000"
+          height="900"
+          priority
+        />
+        <span class="pet-type">{{ currentPet.type }}</span>
+      </div>
+      <section class="details-content">
+        <p class="eyebrow">Your new best friend?</p>
+        <h1>{{ currentPet.name }} <span aria-hidden="true">♥</span></h1>
+        <p class="details-subtitle">{{ currentPet.breed }} <span aria-hidden="true">·</span> {{ currentPet.age }} <span aria-hidden="true">·</span> {{ currentPet.sex }}</p>
+        <p class="details-description">{{ currentPet.description }}</p>
+        <div class="pet-facts">
+          <span><strong>Size</strong>{{ currentPet.size }}</span>
+          <span><strong>Location</strong>{{ currentPet.location }}</span>
+        </div>
+        <div class="trait-list">
+          @for (trait of currentPet.traits; track trait) {
+            <span>{{ trait }}</span>
+          }
+        </div>
+        <button class="button button-primary adopt-button" type="button" (click)="startAdoption()">
+          Adopt {{ currentPet.name }} <span aria-hidden="true">♥</span>
+        </button>
+        <p class="no-fee-note">Every adoption starts with a little conversation.</p>
+      </section>
+    </article>
+  } @else {
+    <section class="pet-not-found">
+      <p class="eyebrow">Oops, no pet found</p>
+      <h1>This friend may have found a home.</h1>
+      <a class="button button-primary" routerLink="/">Browse available pets</a>
+    </section>
+  }
+</main>
+
+@if (adoptionOpen() && pet; as currentPet) {
+  <div class="dialog-backdrop adoption-backdrop" (click)="closeDialogs()">
+    <section
+      class="dialog adoption-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="adoption-title"
+      (click)="$event.stopPropagation()"
+    >
+      <button class="dialog-close" type="button" aria-label="Close adoption form" (click)="closeDialogs()">×</button>
+      <div class="form-pet-heading">
+        <img [ngSrc]="currentPet.image" [alt]="''" width="120" height="120" />
+        <div>
+          <p class="eyebrow">One step closer to forever</p>
+          <h2 id="adoption-title">Adopt {{ currentPet.name }}</h2>
+          <p>Tell us a little about the home waiting for {{ currentPet.name }}.</p>
+        </div>
+      </div>
+      <form class="adoption-form" [formGroup]="adoptionForm" (ngSubmit)="confirmAdoption()" novalidate>
+        <label>
+          Your full name <span aria-hidden="true">*</span>
+          <input type="text" formControlName="fullName" autocomplete="name" />
+          @if (adoptionForm.controls.fullName.touched && adoptionForm.controls.fullName.invalid) {
+            <span class="field-error">Please enter your name.</span>
+          }
+        </label>
+        <label>
+          Email address <span aria-hidden="true">*</span>
+          <input type="email" formControlName="email" autocomplete="email" />
+          @if (adoptionForm.controls.email.touched && adoptionForm.controls.email.invalid) {
+            <span class="field-error">Enter a valid email address.</span>
+          }
+        </label>
+        <label>
+          Phone number <span aria-hidden="true">*</span>
+          <input type="tel" formControlName="phone" autocomplete="tel" />
+          @if (adoptionForm.controls.phone.touched && adoptionForm.controls.phone.invalid) {
+            <span class="field-error">Please enter a phone number.</span>
+          }
+        </label>
+        <label>
+          Where will {{ currentPet.name }} call home? <span aria-hidden="true">*</span>
+          <input type="text" formControlName="home" autocomplete="street-address" placeholder="City or neighborhood" />
+          @if (adoptionForm.controls.home.touched && adoptionForm.controls.home.invalid) {
+            <span class="field-error">Please tell us where you live.</span>
+          }
+        </label>
+        <label class="full-width">
+          Have you had pets before? <span class="optional-label">(optional)</span>
+          <textarea formControlName="experience" rows="3" placeholder="Share anything you'd like us to know..."></textarea>
+        </label>
+        <button class="button button-primary confirm-button" type="submit">
+          Confirm adopt <span aria-hidden="true">♥</span>
+        </button>
+        <p class="privacy-note">Your details stay right here. This demo doesn't save or send anything.</p>
+      </form>
+    </section>
+  </div>
+}
+
+@if (adoptionComplete()) {
+  <div class="dialog-backdrop" (click)="closeDialogs()">
+    <section class="dialog success-dialog" role="dialog" aria-modal="true" aria-labelledby="success-title" (click)="$event.stopPropagation()">
+      <button class="dialog-close" type="button" aria-label="Close confirmation" (click)="closeDialogs()">×</button>
+      <div class="success-icon" aria-hidden="true">♥</div>
+      <p class="eyebrow">A very good day</p>
+      <h2 id="success-title">It’s a match!</h2>
+      <p class="success-copy">
+        Your adoption request for <strong>{{ pet?.name }}</strong> is confirmed.
+        Get ready for a whole lot of love.
+      </p>
+      <a class="button button-primary success-button" routerLink="/" (click)="closeDialogs()">Back to the pets</a>
+      <span class="success-sparkle sparkle-one" aria-hidden="true">✦</span>
+      <span class="success-sparkle sparkle-two" aria-hidden="true">✿</span>
+    </section>
+  </div>
+}
